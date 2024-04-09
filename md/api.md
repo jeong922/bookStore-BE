@@ -44,7 +44,7 @@
 
 **method** : `POST`
 
-**URI** : `/auth/login`
+**URI** : `/users/login`
 
 **HTTP status code** : ✅ `200`
 
@@ -116,7 +116,7 @@ JWT Token
 
 **method** : `POST`
 
-**URI** : `/auth/reset`
+**URI** : `/users/reset`
 
 **HTTP status code** : ✅ `200`
 
@@ -138,7 +138,7 @@ JWT Token
 
 **method** : `PUT`
 
-**URI** : `/auth/reset`
+**URI** : `/users/reset`
 
 **HTTP status code** : ✅ `200`
 
