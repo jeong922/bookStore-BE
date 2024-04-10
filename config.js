@@ -16,4 +16,16 @@ export const config = {
   host: {
     port: parseInt(required('HOST_PORT', 8080)),
   },
+  db: {
+    host: required('DB_HOST'),
+    user: required('DB_USER'),
+    password: required('DB_PASSWORD'),
+    database: required('BD_DATABASE'),
+    port: parseInt(required('BD_PORT')),
+  },
+
+  jwt: {
+    secretKey: required('JWT_SECRET'),
+    expiresInSec: parseInt(required('JWT_EXPIRES_SEC', 300)),
+  },
 };
