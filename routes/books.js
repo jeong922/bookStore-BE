@@ -6,9 +6,13 @@ import { validate } from '../middleware/validator.js';
 const router = express.Router();
 
 const validateQuery = [
-  query('categoryId').isInt().withMessage('categoryId를 숫자로 입력해 주세요.'),
+  query('categoryId')
+    .isInt()
+    .optional()
+    .withMessage('categoryId를 숫자로 입력해 주세요.'),
   query('newBook')
     .isBoolean()
+    .optional()
     .withMessage('true 또는 false로만 입력해 주새요.'),
   validate,
 ];
