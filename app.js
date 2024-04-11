@@ -8,6 +8,7 @@ import likesRouter from './routes/likes.js';
 import ordersRouter from './routes/orders.js';
 import reviewsRouter from './routes/reviews.js';
 import searchRouter from './routes/search.js';
+import categoryRouter from './routes/category.js';
 
 const port = config.host.port;
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(morgan('tiny'));
 
 app.use('/users', usersRouter);
+app.use('/category', categoryRouter);
 app.use('/books', booksRouter);
 app.use('/carts', cartsRouter);
 app.use('/likes', likesRouter);

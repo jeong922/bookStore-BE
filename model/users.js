@@ -1,5 +1,3 @@
-// 이화정
-
 import { conn } from '../db/mariadb.js';
 
 export async function getByUserEmail(email) {
