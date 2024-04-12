@@ -1,24 +1,27 @@
 import { conn } from '../db/mariadb.js';
 
-const SELECT_JOIN =
-  'SELECT b.id, b.title, b.cover, b.form, b.author, b.isbn, b.pages, b.summary, b.detail, b.contents, b.price, b.published_date, c.category FROM books AS b JOIN categories AS c on b.category_id = c.id';
+const SELECT_JOIN = `SELECT b.id, b.title, b.cover, b.form, b.author, b.isbn, b.pages, b.summary, b.detail, b.contents, b.price, b.published_date, c.category 
+                    FROM books AS b JOIN categories AS c on b.category_id = c.id`;
 
-export async function getAllBooks() {
-  const sql = `${SELECT_JOIN} ORDER BY id`;
+export async function getAllBooks(catagoryId, newBook) {
+  const values = catagoryId ? [catagoryId] : '';
+  let query = '';
+
+  if (catagoryId && newBook) {
+    query =
+      'WHERE category_id=? AND published_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()';
+  } else if (catagoryId) {
+    query = 'WHERE category_id=?';
+  } else if (newBook) {
+    query =
+      'WHERE published_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()';
+  }
+
+  const sql = `${SELECT_JOIN} ${query} ORDER BY id`;
+
   return conn
     .promise()
-    .execute(sql)
-    .then((result) => result[0])
-    .catch((err) => {
-      console.log(err);
-    });
-}
-
-export async function getAllBooksByCategory(catagoryId) {
-  const sql = `${SELECT_JOIN} WHERE category_id=?`;
-  return conn
-    .promise()
-    .execute(sql, [catagoryId])
+    .execute(sql, values)
     .then((result) => result[0])
     .catch((err) => {
       console.log(err);

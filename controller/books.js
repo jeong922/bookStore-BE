@@ -1,20 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
-import {
-  bookImages,
-  getAllBooks,
-  getAllBooksByCategory,
-  getBookById,
-} from '../model/books.js';
+import { bookImages, getAllBooks, getBookById } from '../model/books.js';
 
 export async function allBooks(req, res, next) {
   const { categoryId, newBook } = req.query;
-
-  if (categoryId) {
-    const bookByCategory = await getAllBooksByCategory(+categoryId);
-    return res.status(StatusCodes.OK).json(bookByCategory);
-  }
-
-  const books = await getAllBooks();
+  const books = await getAllBooks(categoryId, newBook);
   res.status(StatusCodes.OK).json(books);
 }
 
