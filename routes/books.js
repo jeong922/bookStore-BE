@@ -14,8 +14,11 @@ const validateQuery = [
     .isBoolean()
     .optional()
     .withMessage('true 또는 false로만 입력해 주새요.'),
-  query('maxResults').isInt().withMessage('maxResults를 숫자로 입력해 주세요.'),
-  query('page').isInt().withMessage('page를 숫자로 입력해 주세요.'),
+  query('maxResults')
+    .notEmpty()
+    .isInt()
+    .withMessage('maxResults를 숫자로 입력해 주세요.'),
+  query('page').notEmpty().isInt().withMessage('page를 숫자로 입력해 주세요.'),
   validate,
 ];
 
