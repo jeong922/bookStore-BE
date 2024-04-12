@@ -37,7 +37,7 @@ export async function getBookById(id) {
 }
 
 export async function bookImages(id) {
-  const sql = `SELECT * FROM book_images WHERE book_id=?`;
+  const sql = `SELECT id, url FROM book_images WHERE book_id=?`;
   return conn
     .promise()
     .execute(sql, [id])
