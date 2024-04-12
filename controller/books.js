@@ -2,8 +2,14 @@ import { StatusCodes } from 'http-status-codes';
 import { bookImages, getAllBooks, getBookById } from '../model/books.js';
 
 export async function allBooks(req, res, next) {
-  const { categoryId, newBook } = req.query;
-  const books = await getAllBooks(categoryId, newBook);
+  const { categoryId, newBook, maxResults, page } = req.query;
+
+  const books = await getAllBooks(
+    parseInt(categoryId),
+    newBook,
+    parseInt(maxResults),
+    parseInt(page)
+  );
   res.status(StatusCodes.OK).json(books);
 }
 

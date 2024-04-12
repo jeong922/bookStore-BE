@@ -3,8 +3,11 @@ import { conn } from '../db/mariadb.js';
 const SELECT_JOIN = `SELECT b.id, b.title, b.cover, b.form, b.author, b.isbn, b.pages, b.summary, b.detail, b.contents, b.price, b.published_date, c.category 
                     FROM books AS b JOIN categories AS c on b.category_id = c.id`;
 
-export async function getAllBooks(catagoryId, newBook) {
-  const values = catagoryId ? [catagoryId] : '';
+export async function getAllBooks(catagoryId, newBook, maxResults, page) {
+  const offset = maxResults * (page - 1);
+  const values = catagoryId
+    ? [catagoryId, offset, maxResults]
+    : [offset, maxResults];
   let query = '';
 
   if (catagoryId && newBook) {
@@ -17,7 +20,7 @@ export async function getAllBooks(catagoryId, newBook) {
       'WHERE published_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()';
   }
 
-  const sql = `${SELECT_JOIN} ${query} ORDER BY id`;
+  const sql = `${SELECT_JOIN} ${query} ORDER BY id LIMIT ?, ?`;
 
   return conn
     .promise()
