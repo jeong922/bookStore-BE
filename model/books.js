@@ -1,13 +1,33 @@
 import { conn } from '../db/mariadb.js';
 
-const SELECT_JOIN = `SELECT b.id, b.title, b.cover, b.form, b.author, b.isbn, b.pages, b.summary, b.detail, b.contents, b.price, b.published_date, c.category 
-                    FROM books AS b JOIN categories AS c on b.category_id = c.id`;
+// const SELECT_JOIN = `SELECT b.id, b.title, b.cover, b.form, b.author, b.isbn, b.pages, b.summary, b.detail, b.contents, b.price, b.published_date, c.category,
+//                     (SELECT COUNT(*) FROM likes AS l WHERE l.book_id = b.id) AS likes,
+//                     (SELECT EXISTS(SELECT * FROM likes AS l WHERE l.user_id = ? and l.book_id = b.id)) AS liked
+//                     FROM books AS b JOIN categories AS c on b.category_id = c.id`;
 
-export async function getAllBooks(catagoryId, newBook, maxResults, page) {
+// TODO:JOIN으로만 가능한지 해보기
+function makeJoinQuery(userId) {
+  return `SELECT b.id, b.title, b.cover, b.form, b.author, b.isbn, b.pages, b.summary, b.detail, b.contents, b.price, b.published_date, c.category,
+                    (SELECT COUNT(*) FROM likes AS l WHERE l.book_id = b.id) AS likes${
+                      userId
+                        ? ', (SELECT EXISTS(SELECT * FROM likes AS l WHERE l.user_id = ? and l.book_id = b.id)) AS liked'
+                        : ', 0 as liked'
+                    }
+                    FROM books AS b JOIN categories AS c on b.category_id = c.id`;
+}
+
+export async function getAllBooks(
+  catagoryId,
+  newBook,
+  maxResults,
+  page,
+  userId
+) {
   const offset = maxResults * (page - 1);
-  const values = catagoryId
+  let values = catagoryId
     ? [catagoryId, offset, maxResults]
     : [offset, maxResults];
+
   let query = '';
 
   if (catagoryId && newBook) {
@@ -20,8 +40,8 @@ export async function getAllBooks(catagoryId, newBook, maxResults, page) {
       'WHERE published_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()';
   }
 
-  const sql = `${SELECT_JOIN} ${query} ORDER BY id LIMIT ?, ?`;
-
+  values = userId ? [userId, ...values] : values;
+  const sql = `${makeJoinQuery(userId)} ${query} ORDER BY id LIMIT ?, ?`;
   return conn
     .promise()
     .execute(sql, values)
@@ -31,11 +51,12 @@ export async function getAllBooks(catagoryId, newBook, maxResults, page) {
     });
 }
 
-export async function getBookById(id) {
-  const sql = `${SELECT_JOIN} WHERE b.id=?`;
+export async function getBookById(id, userId) {
+  const sql = `${makeJoinQuery(userId)} WHERE b.id=?`;
+  const values = userId ? [userId, id] : [id];
   return conn
     .promise()
-    .execute(sql, [id])
+    .execute(sql, values)
     .then((result) => result[0][0])
     .catch((err) => {
       console.log(err);
