@@ -46,7 +46,7 @@ export async function getCartItem(userId, bookId) {
   return conn
     .promise()
     .execute(sql, values)
-    .then((result) => result[0])
+    .then((result) => result[0][0])
     .catch((err) => {
       console.log(err);
     });
