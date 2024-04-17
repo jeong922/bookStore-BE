@@ -1,3 +1,4 @@
+-- 도서 등록
 INSERT INTO books (title,  category_id,  form, author,  isbn,  pages,  summary,  detail, contents, price, published_date) 
 VALUES ('어린왕자들', 1, '종이책', '김어림', '0000000000000', 100, '어리다..', '많이 어리다..', '목차입니다.', 20000, '2019-01-01 00:00:00');
 
@@ -24,3 +25,27 @@ VALUES ('갈기없는 사자, 라이언', 1, 'eBook', '라이언', '882438493711
 
 INSERT INTO BookStore.books (title,  category_id,  form, author,  isbn,  pages,  summary,  detail, contents, price, published_date) 
 VALUES ('어피치피치피치', 1, 'eBook', '어피치', '1239193212311', 123, '카카오프렌즈 최고 잔망꾸러기 복숭아', '카카오프렌즈 최고 잔망꾸러기 복숭아! 유전자변이로 자웅동주임...', '목차입니다.', 20000, '2024-04-05');
+
+
+-- 주문하기
+
+-- 배송 정보 입력
+INSERT INTO deliveries (address, receiver, contact, user_id) VALUES('춘식이 주소 주소 주소', '춘식', '010-2222-1111', 15);
+
+-- 주문 등록
+INSERT INTO orders (user_id, delivery_id, total_price, main_book_title, total_quantity, payment_information) 
+VALUES(15, 16, 38900, '춘식이인데요?', 2, 'N Pay');
+
+-- 주문 된 도서 정도 등록
+INSERT INTO orderedBook (order_id, book_id, quantity) VALUES (8, 6, 1), (8, 8, 1);
+
+-- 주문 목록 조회
+SELECT o.id, o.created_at AS createdAt, o.main_book_title AS bookTitle, o.total_price AS totalPrice, o.total_quantity AS totalQuantity,
+o.payment_information AS paymentInformation, d.address, d.receiver, d.contact
+FROM orders AS o JOIN deliveries AS d ON o.delivery_id = d.id 
+WHERE o.user_id=15;
+
+-- 주문 상세 조회
+SELECT ob.book_id AS bookId, b.title, b.author, b.price, ob.quantity
+FROM orderedBook AS ob JOIN orders AS o ON ob.order_id = o.id JOIN books AS b ON ob.book_id = b.id 
+WHERE ob.order_id=10;
