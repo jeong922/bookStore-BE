@@ -28,9 +28,12 @@ export async function removeCartById(id) {
 export async function getCartItemsList(userId, seletedItems) {
   const sql = `SELECT c.id, c.book_id, b.title, b.summary, c.quantity, b.price 
 		FROM cartItems AS c JOIN books AS b ON c.book_id = b.id 
-		WHERE user_id=? ${seletedItems ? `AND c.id IN(?)` : ''}`;
+		WHERE user_id=? ${
+      seletedItems ? `AND c.id IN(${seletedItems.join(', ')})` : ''
+    }`;
 
-  const values = seletedItems ? [userId, ...seletedItems] : [userId];
+  const values = [userId];
+
   return conn
     .promise()
     .execute(sql, values)
