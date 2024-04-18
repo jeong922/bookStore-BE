@@ -5,9 +5,8 @@ import { conn } from '../db/mariadb.js';
 //                     (SELECT EXISTS(SELECT * FROM likes AS l WHERE l.user_id = ? and l.book_id = b.id)) AS liked
 //                     FROM books AS b JOIN categories AS c on b.category_id = c.id`;
 
-// TODO:JOIN으로만 가능한지 해보기
 function makeJoinQuery(userId) {
-  return `SELECT b.id, b.title, b.cover, b.form, b.author, b.isbn, b.pages, b.summary, b.detail, b.contents, b.price, b.published_date, c.category,
+  return `SELECT b.id, b.title, b.cover, b.form, b.author, b.isbn, b.pages, b.summary, b.detail, b.contents, b.price, b.published_date AS publishedDate, c.category,
                     (SELECT COUNT(*) FROM likes AS l WHERE l.book_id = b.id) AS likes${
                       userId
                         ? ', (SELECT EXISTS(SELECT * FROM likes AS l WHERE l.user_id = ? and l.book_id = b.id)) AS liked'
