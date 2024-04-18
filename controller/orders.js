@@ -33,6 +33,7 @@ export async function order(req, res, next) {
   res.status(201).json(ordered);
 }
 
+// delivery 데이터를 객체 하나에 다 때려넣는 버전
 export async function getOrders(req, res, next) {
   const { userId } = req.body;
   const orders = await getOrderList(userId);
@@ -40,6 +41,7 @@ export async function getOrders(req, res, next) {
   res.status(200).json(orders);
 }
 
+// delivery 데이터를 delivery 객체를 만들어 안에 데이터 넣는 버전
 // export async function getOrders(req, res, next) {
 //   const { userId } = req.body;
 //   const orders = await getOrderList(userId);
