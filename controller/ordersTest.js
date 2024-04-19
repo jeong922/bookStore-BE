@@ -24,7 +24,7 @@ export const order = async (req, res) => {
   const { address, receiver, contact } = delivery;
   const deliverySql = `INSERT INTO deliveries (address, receiver, contact, user_id) VALUES(?, ?, ?, ?)`;
   const deliveryValues = [address, receiver, contact, userId];
-  const [deliveryResult] = await conn.query(deliverySql, deliveryValues);
+  const [deliveryResult] = await conn.execute(deliverySql, deliveryValues);
   const deliveryId = deliveryResult.insertId;
 
   // addOrder
@@ -39,13 +39,13 @@ export const order = async (req, res) => {
     totalQuantity,
     paymentInformation,
   ];
-  const [orderResult] = await conn.query(orderSql, orderValues);
+  const [orderResult] = await conn.execute(orderSql, orderValues);
   const orderId = orderResult.insertId;
 
   // addOrderedBook
   const bookIdArr = items.map((item) => [orderId, item.bookId, item.quantity]);
   const sql = `INSERT INTO orderedBook (order_id, book_id, quantity) VALUES ?`;
-  const ordered = await conn.query(sql, [bookIdArr]);
+  const [ordered] = await conn.query(sql, [bookIdArr]);
 
   res.status(201).json(ordered);
 };
