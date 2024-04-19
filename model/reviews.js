@@ -13,7 +13,8 @@ export async function addReviewById(bookId, userId, review) {
 }
 
 export async function getReviewsBookId(bookId) {
-  const sql = `SELECT * FROM reviews WHERE book_id=?`;
+  const sql = `SELECT r.id, r.book_id AS bookId, r.review, r.created_at AS createdAt, r.updated_at AS updatedAt, u.name, u.email
+   FROM reviews AS r JOIN users AS u ON r.user_id = u.id WHERE book_id=?`;
   const values = [bookId];
   return conn
     .promise()
@@ -25,7 +26,7 @@ export async function getReviewsBookId(bookId) {
 }
 
 export async function getReviewsUserId(userId) {
-  const sql = `SELECT * FROM reviews WHERE user_id=?`;
+  const sql = `SELECT id, book_id AS bookId, review, created_at AS createdAt, updated_at AS updatedAt FROM reviews WHERE user_id=?`;
   const values = [userId];
   return conn
     .promise()
