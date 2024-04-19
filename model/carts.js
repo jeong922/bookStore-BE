@@ -25,6 +25,19 @@ export async function removeCartById(id) {
     });
 }
 
+export async function removeCartItemsByIds(items) {
+  const idArr = items.map((item) => item.cartItemId);
+  const sql = 'DELETE FROM cartItems WHERE id IN (?)';
+  const values = [idArr];
+  return await conn
+    .promise()
+    .query(sql, values)
+    .then((result) => result[0])
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
 export async function getCartItemsList(userId, seletedItems) {
   const sql = `SELECT c.id, c.book_id AS bookId, b.title, b.summary, c.quantity, b.price 
 		FROM cartItems AS c JOIN books AS b ON c.book_id = b.id 

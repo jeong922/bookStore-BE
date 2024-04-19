@@ -1,3 +1,4 @@
+import { removeCartItemsByIds } from '../model/carts.js';
 import {
   addDelivery,
   addOrder,
@@ -28,52 +29,17 @@ export async function order(req, res, next) {
 
   const ordered = await addOrdered(orderId, items);
 
-  //TODO:장바구니 삭제 구현하기(주문 구현 테스트 끝나면)
+  const deleteItems = await removeCartItemsByIds(items);
 
   res.status(201).json(ordered);
 }
 
-// delivery 데이터를 객체 하나에 다 때려넣는 버전
 export async function getOrders(req, res, next) {
   const { userId } = req.body;
   const orders = await getOrderList(userId);
 
   res.status(200).json(orders);
 }
-
-// delivery 데이터를 delivery 객체를 만들어 안에 데이터 넣는 버전
-// export async function getOrders(req, res, next) {
-//   const { userId } = req.body;
-//   const orders = await getOrderList(userId);
-
-//   const list = orders.map((order) => {
-//     const {
-//       id,
-//       createdAt,
-//       bookTitle,
-//       totalPrice,
-//       totalQuantity,
-//       paymentInformation,
-//       address,
-//       receiver,
-//       contact,
-//     } = order;
-//     return {
-//       id,
-//       createdAt,
-//       bookTitle,
-//       totalPrice,
-//       totalQuantity,
-//       paymentInformation,
-//       delivery: {
-//         address,
-//         receiver,
-//         contact,
-//       },
-//     };
-//   });
-//   res.status(200).json(list);
-// }
 
 export async function getOrderDetail(req, res, next) {
   const { id } = req.params;

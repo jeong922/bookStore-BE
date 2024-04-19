@@ -76,7 +76,7 @@ export async function getOrderById(orderId) {
   const values = [orderId];
   return conn
     .promise()
-    .query(sql, values)
+    .execute(sql, values)
     .then((result) => result[0])
     .catch((err) => {
       console.log(err);
