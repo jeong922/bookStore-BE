@@ -12,12 +12,13 @@ function makeJoinQuery(userId) {
 
 export async function getBooksByKeyword(keyword, maxResults, page, userId) {
   const offset = maxResults * (page - 1);
-  let values = [offset, maxResults];
+  const values = userId
+    ? [userId, `%${keyword}%`, offset, maxResults]
+    : [`%${keyword}%`, offset, maxResults];
 
-  values = userId ? [userId, ...values] : values;
   const sql = `${makeJoinQuery(
     userId
-  )} WHERE b.title LIKE "%${keyword}%" ORDER BY id LIMIT ?, ?`;
+  )} WHERE b.title LIKE ? ORDER BY b.id LIMIT ?, ?`;
 
   return conn
     .promise()
