@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/:bookId', reviewController.getReviews);
 
 // 리뷰 작성
-router.post('/:bookId', reviewController.addReview);
+router.post('/', reviewController.addReview);
 
 // 리뷰 수정
 router.put('/', reviewController.updateReview);
