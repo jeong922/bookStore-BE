@@ -28,26 +28,12 @@ export async function addOrder(
     });
 }
 
-// export async function addOrdered(orderId, items) {
-//   const bookIdArr = items.map((item) => [orderId, item.bookId, item.quantity]);
-//   const sql = `INSERT INTO orderedBook (order_id, book_id, quantity) VALUES ?`;
-//   return conn
-//     .promise()
-//     .query(sql, [bookIdArr])
-//     .then((result) => result[0])
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// }
-
 export async function addOrdered(orderId, items) {
-  const bookIdArr = items.map(
-    (item) => `(${orderId}, ${item.bookId}, ${item.quantity})`
-  );
-  const sql = `INSERT INTO orderedBook (order_id, book_id, quantity) VALUES ${bookIdArr}`;
+  const bookIdArr = items.map((item) => [orderId, item.bookId, item.quantity]);
+  const sql = `INSERT INTO orderedBook (order_id, book_id, quantity) VALUES ?`;
   return conn
     .promise()
-    .execute(sql)
+    .execute(sql, [bookIdArr])
     .then((result) => result[0])
     .catch((err) => {
       console.log(err);
@@ -62,7 +48,7 @@ export async function getOrderList(userId) {
   const values = [userId];
   return conn
     .promise()
-    .query(sql, values)
+    .execute(sql, values)
     .then((result) => result[0])
     .catch((err) => {
       console.log(err);
@@ -102,7 +88,7 @@ export async function getDeliveryByUserId(userId) {
   const values = [userId];
   return conn
     .promise()
-    .query(sql, values)
+    .execute(sql, values)
     .then((result) => result[0])
     .catch((err) => {
       console.log(err);
