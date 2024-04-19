@@ -13,6 +13,7 @@ export const order = async (req, res) => {
 
   const {
     userId,
+    mainBookTitle,
     items,
     delivery,
     totalPrice,
@@ -27,8 +28,12 @@ export const order = async (req, res) => {
   const [deliveryResult] = await conn.execute(deliverySql, deliveryValues);
   const deliveryId = deliveryResult.insertId;
 
+  // SELECT book_id, quantity FROM cartItems WEHRE id IN ()
+  const selectSql =
+    'SELECT book_id AS bookId, quantity FROM cartItems WHERE id IN (?)';
+  const [orderItems] = await conn.query(selectSql, [items]);
+
   // addOrder
-  const mainBookTitle = items[0].title;
   const orderSql = `INSERT INTO orders (user_id, delivery_id, total_price, main_book_title, total_quantity, payment_information)
   	VALUES(?, ?, ?, ?, ?, ?)`;
   const orderValues = [
@@ -42,10 +47,18 @@ export const order = async (req, res) => {
   const [orderResult] = await conn.execute(orderSql, orderValues);
   const orderId = orderResult.insertId;
 
-  // addOrderedBook
-  const bookIdArr = items.map((item) => [orderId, item.bookId, item.quantity]);
-  const sql = `INSERT INTO orderedBook (order_id, book_id, quantity) VALUES ?`;
-  const [ordered] = await conn.query(sql, [bookIdArr]);
+  // addOrderedBook;
+  const bookIdArr = orderItems.map((item) => [
+    orderId,
+    item.bookId,
+    item.quantity,
+  ]);
+  const orderedSql = `INSERT INTO orderedBook (order_id, book_id, quantity) VALUES ?`;
+  const [ordered] = await conn.query(orderedSql, [bookIdArr]);
+
+  const deleteSql = 'DELETE FROM cartItems WHERE id IN (?)';
+  const deleteValues = [items];
+  const deleteItems = await conn.query(deleteSql, deleteValues);
 
   res.status(201).json(ordered);
 };
