@@ -6,24 +6,24 @@ import { validate } from '../middleware/validator.js';
 const router = express.Router();
 
 const validateQuery = [
-  query('categoryId')
-    .isInt()
-    .optional()
-    .withMessage('categoryId를 숫자로 입력해 주세요.'),
+  query('categoryId').isInt().optional().withMessage('숫자로 입력해 주세요.'),
   query('newBook')
     .isBoolean()
     .optional()
     .withMessage('true 또는 false로만 입력해 주새요.'),
   query('maxResults')
     .notEmpty()
-    .isInt()
-    .withMessage('maxResults를 숫자로 입력해 주세요.'),
-  query('page').notEmpty().isInt().withMessage('page를 숫자로 입력해 주세요.'),
+    .isInt({ min: 1 })
+    .withMessage('1이상 숫자로 입력해 주세요.'),
+  query('page')
+    .notEmpty()
+    .isInt({ min: 1 })
+    .withMessage('1이상 숫자로 입력해 주세요.'),
   validate,
 ];
 
 const validateId = [
-  param('id').notEmpty().isInt().withMessage('id를 숫자로 입력해주세요.'),
+  param('id').notEmpty().isInt().withMessage('숫자로 입력해주세요.'),
   validate,
 ];
 
