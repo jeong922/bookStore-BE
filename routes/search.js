@@ -15,12 +15,12 @@ const validateKeyword = [
   query('maxResults')
     .notEmpty()
     .withMessage('숫자로 입력해 주세요.')
-    .isNumeric()
+    .isInt()
     .withMessage('숫자로 입력해 주세요.'),
   query('page')
     .notEmpty()
     .withMessage('숫자로 입력해 주세요.')
-    .isNumeric()
+    .isInt()
     .withMessage('숫자로 입력해 주세요.'),
   validate,
 ];
