@@ -17,8 +17,8 @@ const validatePassword = [
   body('password')
     .notEmpty()
     .trim()
-    .isLength({ min: 4 })
-    .withMessage('비밀번호는 네글자 이상 입력해주세요.'),
+    .isLength({ min: 6, max: 20 })
+    .withMessage('비밀번호는 6글자 이상 20글자 이하로 입력해주세요.'),
 ];
 
 const validateName = [
