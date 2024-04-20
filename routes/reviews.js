@@ -21,6 +21,17 @@ const validateReview = [
   validate,
 ];
 
+const validateUpdateReview = [
+  body('userId').notEmpty().isInt().withMessage('숫자로 입력해 주세요.'),
+  body('reviewId').notEmpty().isInt().withMessage('숫자로 입력해 주세요.'),
+  body('text')
+    .notEmpty()
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage('최소 한 글자 이상 입력해 주세요.'),
+  validate,
+];
+
 const validateRemoveReview = [
   body('userId').notEmpty().isInt().withMessage('숫자로 입력해 주세요.'),
   body('reviewId').notEmpty().isInt().withMessage('숫자로 입력해 주세요.'),
@@ -39,7 +50,7 @@ router.get('/:bookId', validateBookId, reviewController.getReviews);
 router.post('/', validateReview, reviewController.addReview);
 
 // 리뷰 수정
-router.put('/', validateReview, reviewController.updateReview);
+router.put('/', validateUpdateReview, reviewController.updateReview);
 
 // 리뷰 삭제
 router.delete('/', validateRemoveReview, reviewController.removeReview);
