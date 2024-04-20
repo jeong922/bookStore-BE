@@ -8,7 +8,7 @@ export async function addOrder(
   totalQuantity,
   paymentInformation
 ) {
-  const mainBookTitle = items[0].title;
+  const mainBookTitle = items && items.length && items[0].title;
   const sql = `INSERT INTO orders (user_id, delivery_id, total_price, main_book_title, total_quantity, payment_information) 
 	VALUES(?, ?, ?, ?, ?, ?)`;
   const values = [
@@ -33,7 +33,7 @@ export async function addOrdered(orderId, items) {
   const sql = `INSERT INTO orderedBook (order_id, book_id, quantity) VALUES ?`;
   return conn
     .promise()
-    .execute(sql, [bookIdArr])
+    .query(sql, [bookIdArr])
     .then((result) => result[0])
     .catch((err) => {
       console.log(err);
