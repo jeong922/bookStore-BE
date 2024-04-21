@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-function required(key, defaultValue = undefined) {
+function required(key: string, defaultValue: any = undefined) {
   const value = process.env[key] || defaultValue;
 
   if (value == null) {

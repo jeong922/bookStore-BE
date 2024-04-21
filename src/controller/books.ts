@@ -1,22 +1,33 @@
+import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { bookImages, getAllBooks, getBookById } from '../model/books.js';
 
-export async function allBooks(req, res, next) {
+export async function allBooks(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const { categoryId, newBook, maxResults, page } = req.query;
   // FIXME:userId 받아오는거 수정
   const { userId } = req.body;
 
+  const isNewBook = newBook === 'true' ? true : false;
+
   const books = await getAllBooks(
-    parseInt(categoryId),
-    newBook,
-    parseInt(maxResults),
-    parseInt(page),
-    parseInt(userId)
+    Number(categoryId),
+    isNewBook,
+    Number(maxResults),
+    Number(page),
+    Number(userId)
   );
   res.status(StatusCodes.OK).json(books);
 }
 
-export async function bookDetail(req, res, next) {
+export async function bookDetail(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const id = parseInt(req.params.id);
   const userId = req.body.userId;
   const book = await getBookById(id, userId);

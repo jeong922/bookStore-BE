@@ -27,7 +27,7 @@ const validateGetCartItems = [
     .isArray()
     .withMessage('배열로 입력해 주세요.')
     .custom((value) => {
-      if (!value.every((item) => Number.isInteger(item) && item > 0)) {
+      if (!value.every((item: any) => Number.isInteger(item) && item > 0)) {
         throw new Error('1 이상의 정수만 포함되게 입력해 주세요.');
       }
       return true;

@@ -1,3 +1,4 @@
+import { NextFunction, Request, Response } from 'express';
 import { removeCartItemsByIds } from '../model/carts.js';
 import {
   addDelivery,
@@ -7,7 +8,7 @@ import {
   getOrderList,
 } from '../model/orders.js';
 
-export async function order(req, res, next) {
+export async function order(req: Request, res: Response, next: NextFunction) {
   //TODO:userId 받아오기 수정
   const {
     userId,
@@ -17,7 +18,9 @@ export async function order(req, res, next) {
     totalQuantity,
     paymentInformation,
   } = req.body;
+
   const deliveryId = await addDelivery(delivery, userId);
+
   const orderId = await addOrder(
     items,
     userId,
@@ -34,15 +37,23 @@ export async function order(req, res, next) {
   res.status(201).json(ordered);
 }
 
-export async function getOrders(req, res, next) {
+export async function getOrders(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const { userId } = req.body;
   const orders = await getOrderList(userId);
 
   res.status(200).json(orders);
 }
 
-export async function getOrderDetail(req, res, next) {
-  const { id } = req.params;
+export async function getOrderDetail(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const id = +req.params.id;
   const detail = await getOrderById(id);
 
   res.status(200).json(detail);

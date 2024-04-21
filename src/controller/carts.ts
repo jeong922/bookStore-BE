@@ -1,3 +1,4 @@
+import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import {
   addCart,
@@ -7,7 +8,11 @@ import {
   updateItem,
 } from '../model/carts.js';
 
-export async function addCartItem(req, res, next) {
+export async function addCartItem(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const { bookId, quantity, userId } = req.body;
   const item = await getCartItem(userId, bookId);
 
@@ -22,13 +27,21 @@ export async function addCartItem(req, res, next) {
   res.status(StatusCodes.CREATED).json(cart);
 }
 
-export async function removeCartItem(req, res, next) {
+export async function removeCartItem(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const { id } = req.params;
-  const item = await removeCartById(id);
+  const item = await removeCartById(+id);
   res.status(StatusCodes.OK).json(item);
 }
 
-export async function getCartItems(req, res, next) {
+export async function getCartItems(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const { userId, seletedItems } = req.body;
 
   const cart = await getCartItemsList(userId, seletedItems);
@@ -36,9 +49,13 @@ export async function getCartItems(req, res, next) {
   res.status(StatusCodes.OK).json(cart);
 }
 
-export async function updateCartItem(req, res, next) {
-  const { id } = req.params;
-  const { quantity } = req.body;
+export async function updateCartItem(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const id = +req.params.id;
+  const quantity = +req.body.quantity;
 
   const item = await updateItem(id, quantity);
 

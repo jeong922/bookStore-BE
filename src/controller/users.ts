@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import { CookieOptions, NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { config } from '../config.js';
 import {
@@ -10,7 +11,7 @@ import {
   updateUserInfo,
 } from '../model/users.js';
 
-export async function join(req, res, next) {
+export async function join(req: Request, res: Response, next: NextFunction) {
   const { name, email, password } = req.body;
 
   const salt = crypto.randomBytes(10).toString('base64');
@@ -30,7 +31,7 @@ export async function join(req, res, next) {
   res.sendStatus(StatusCodes.CREATED);
 }
 
-export async function login(req, res, next) {
+export async function login(req: Request, res: Response, next: NextFunction) {
   const { email, password } = req.body;
 
   const user = await getByUserEmail(email);
@@ -56,7 +57,11 @@ export async function login(req, res, next) {
   res.status(StatusCodes.OK).json({ name: user.name, email: user.email });
 }
 
-export async function passwordResetRequest(req, res, next) {
+export async function passwordResetRequest(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const { email } = req.body;
   const user = await getByUserEmail(email);
 
@@ -67,12 +72,17 @@ export async function passwordResetRequest(req, res, next) {
   return res.status(StatusCodes.OK).json({ email });
 }
 
-export async function passwordReset(req, res, next) {
+export async function passwordReset(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const { email, password } = req.body;
   const user = await getByUserEmail(email);
-  const hanshNewPassword = createHash(password, user.salt);
 
-  if (user.password === hanshNewPassword) {
+  const hanshNewPassword = user && createHash(password, user.salt);
+
+  if (user && user.password === hanshNewPassword) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       message: '이전 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.',
     });
@@ -84,7 +94,7 @@ export async function passwordReset(req, res, next) {
   res.status(StatusCodes.OK).json(updatedPassword);
 }
 
-export async function getUser(req, res, next) {
+export async function getUser(req: Request, res: Response, next: NextFunction) {
   const id = parseInt(req.params.id);
   const user = await getByUserId(id);
 
@@ -98,7 +108,11 @@ export async function getUser(req, res, next) {
   res.status(StatusCodes.OK).json({ id, name, email, contact, address });
 }
 
-export async function updateUser(req, res, next) {
+export async function updateUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const id = parseInt(req.params.id);
   const { contact, address } = req.body;
   const user = await getByUserId(id);
@@ -114,24 +128,25 @@ export async function updateUser(req, res, next) {
   res.sendStatus(StatusCodes.OK);
 }
 
-function createJWTToken(email) {
+function createJWTToken(email: string) {
   return jwt.sign({ email }, config.jwt.secretKey, {
     expiresIn: config.jwt.expiresInSec,
     issuer: 'jeong',
   });
 }
 
-function setToken(res, token) {
-  const option = {
+function setToken(res: Response, token: string) {
+  const options: CookieOptions = {
     maxAge: config.jwt.expiresInSec * 1000,
     httpOnly: true,
     sameSite: 'none',
     secure: true,
   };
-  return res.cookie('token', token, option);
+
+  return res.cookie('token', token, options);
 }
 
-function createHash(password, salt) {
+function createHash(password: string, salt: string) {
   return crypto
     .pbkdf2Sync(password, salt, 10000, 10, 'sha512')
     .toString('base64');

@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import { config } from './config.js';
 import usersRouter from './routes/users.js';
@@ -25,11 +25,11 @@ app.use('/orders', ordersRouter);
 app.use('/reviews', reviewsRouter);
 app.use('/search', searchRouter);
 
-app.use((req, res, next) => {
+app.use((_req: Request, res: Response, next: NextFunction) => {
   res.sendStatus(404);
 });
 
-app.use((error, req, res, next) => {
+app.use((error: any, _req: Request, res: Response, next: NextFunction) => {
   console.error(error);
   res.sendStatus(500);
 });
