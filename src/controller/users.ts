@@ -17,7 +17,6 @@ export async function join(req: Request, res: Response, next: NextFunction) {
   const salt = crypto.randomBytes(10).toString('base64');
   const hashPassword = createHash(password, salt);
 
-  // TODO:가입여부 확인 다른 방법 찾아보기
   const user = await getByUserEmail(email);
 
   if (user) {
@@ -58,7 +57,10 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
   setToken(res, token);
 
-  res.status(StatusCodes.OK).json({ name: user.name, email: user.email });
+  // FIXME:json으로 token 넘겨주는거 삭제
+  res
+    .status(StatusCodes.OK)
+    .json({ name: user.name, email: user.email, token });
 }
 
 export async function passwordResetRequest(

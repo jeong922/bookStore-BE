@@ -2,7 +2,7 @@ import express from 'express';
 import * as searchController from '../controller/search.js';
 import { query } from 'express-validator';
 import { validate } from '../middleware/validator.js';
-import { ensureAuth, optionalEnsureAuth } from '../middleware/auth.js';
+import { optionalEnsureAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 

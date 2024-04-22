@@ -10,14 +10,12 @@ export async function ensureAuth(
   next: NextFunction
 ) {
   const authHeader = req.get('Authorization');
-  try {
-    if (!(authHeader && authHeader.startsWith('Bearer '))) {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json({ message: '인증 오류' });
-    }
-    const token = authHeader.split(' ')[1];
+  if (!(authHeader && authHeader.startsWith('Bearer '))) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message: '인증 오류' });
+  }
+  const token = authHeader.split(' ')[1];
 
+  try {
     const decodedJwt = jwt.verify(token, config.jwt.secretKey) as JwtPayload;
 
     const user = await getByUserId(decodedJwt.id);
@@ -50,14 +48,12 @@ export async function optionalEnsureAuth(
   next: NextFunction
 ) {
   const authHeader = req.get('Authorization');
-  try {
-    if (!(authHeader && authHeader.startsWith('Bearer '))) {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json({ message: '인증 오류' });
-    }
-    const token = authHeader.split(' ')[1];
+  if (!(authHeader && authHeader.startsWith('Bearer '))) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message: '인증 오류' });
+  }
+  const token = authHeader.split(' ')[1];
 
+  try {
     const decodedJwt = jwt.verify(token, config.jwt.secretKey) as JwtPayload;
 
     req.userId = decodedJwt.id;
