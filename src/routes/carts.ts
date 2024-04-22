@@ -2,6 +2,7 @@ import express from 'express';
 import * as cartController from '../controller/carts.js';
 import { body, param } from 'express-validator';
 import { validate } from '../middleware/validator.js';
+import { ensureAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -11,7 +12,6 @@ const validateAddCartItem = [
     .notEmpty()
     .isInt({ min: 1 })
     .withMessage('1 이상의 숫자로 입력해 주세요.'),
-  body('userId').notEmpty().isInt().withMessage('숫자로 입력해 주세요.'),
   validate,
 ];
 
@@ -21,7 +21,6 @@ const validateRemoveCartItem = [
 ];
 
 const validateGetCartItems = [
-  body('userId').isInt().withMessage('숫자로 입력해 주세요.'),
   body('seletedItems')
     .optional()
     .isArray()
@@ -44,15 +43,25 @@ const validateUpdateCartItem = [
 ];
 
 // 장바구니 담기
-router.post('/', validateAddCartItem, cartController.addCartItem);
+router.post('/', ensureAuth, validateAddCartItem, cartController.addCartItem);
 
 // 장바구니 조회
-router.get('/', validateGetCartItems, cartController.getCartItems);
+router.get('/', ensureAuth, validateGetCartItems, cartController.getCartItems);
 
 // 장바구니 삭제
-router.delete('/:id', validateRemoveCartItem, cartController.removeCartItem);
+router.delete(
+  '/:id',
+  ensureAuth,
+  validateRemoveCartItem,
+  cartController.removeCartItem
+);
 
 // 장바구니 수량 수정
-router.put('/:id', validateUpdateCartItem, cartController.updateCartItem);
+router.put(
+  '/:id',
+  ensureAuth,
+  validateUpdateCartItem,
+  cartController.updateCartItem
+);
 
 export default router;

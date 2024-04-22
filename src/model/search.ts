@@ -25,7 +25,6 @@ export async function getBooksByKeyword(
 }
 
 function makeJoinQuery(userId: number | undefined) {
-  console.log(userId);
   return `SELECT b.id, b.title, b.cover, b.form, b.author, b.isbn, b.pages, b.summary, b.detail, b.contents, b.price, b.published_date AS publishedDate, c.category,
                     (SELECT COUNT(*) FROM likes AS l WHERE l.book_id = b.id) AS likes${
                       userId

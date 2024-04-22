@@ -1,6 +1,6 @@
 import { conn } from '../db/mariadb.js';
 
-export async function addLike(bookId: number, userId: number) {
+export async function addLike(bookId: number, userId: any) {
   const sql = 'INSERT INTO likes (book_id, user_id) VALUES(?, ?)';
   const values = [bookId, userId];
   return conn

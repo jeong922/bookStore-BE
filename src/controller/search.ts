@@ -7,13 +7,13 @@ export async function searchKeyword(
   next: NextFunction
 ) {
   const { keyword, maxResults, page } = req.query;
-  const userId = req.body.userId;
-  console.log(userId);
+  const userId = req.userId;
+
   const books = await getBooksByKeyword(
     keyword as string,
-    Number(maxResults),
-    Number(page),
-    Number(userId)
+    +maxResults,
+    +page,
+    userId
   );
   res.status(200).json(books);
 }

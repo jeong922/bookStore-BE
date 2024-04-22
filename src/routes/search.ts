@@ -2,6 +2,7 @@ import express from 'express';
 import * as searchController from '../controller/search.js';
 import { query } from 'express-validator';
 import { validate } from '../middleware/validator.js';
+import { ensureAuth, optionalEnsureAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -26,6 +27,11 @@ const validateKeyword = [
 ];
 
 // 키워드 검색
-router.get('/', validateKeyword, searchController.searchKeyword);
+router.get(
+  '/',
+  optionalEnsureAuth,
+  validateKeyword,
+  searchController.searchKeyword
+);
 
 export default router;

@@ -8,17 +8,15 @@ export async function allBooks(
   next: NextFunction
 ) {
   const { categoryId, newBook, maxResults, page } = req.query;
-  // FIXME:userId 받아오는거 수정
-  const { userId } = req.body;
-
+  const userId = req.userId;
   const isNewBook = newBook === 'true' ? true : false;
 
   const books = await getAllBooks(
-    Number(categoryId),
+    categoryId,
     isNewBook,
-    Number(maxResults),
-    Number(page),
-    Number(userId)
+    maxResults,
+    page,
+    userId
   );
   res.status(StatusCodes.OK).json(books);
 }
@@ -29,7 +27,7 @@ export async function bookDetail(
   next: NextFunction
 ) {
   const id = parseInt(req.params.id);
-  const userId = req.body.userId;
+  const userId = req.userId;
   const book = await getBookById(id, userId);
   if (!book) {
     return res.sendStatus(StatusCodes.NOT_FOUND);

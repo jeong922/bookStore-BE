@@ -1,4 +1,4 @@
-import { RowDataPacket } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { conn } from '../db/mariadb.js';
 
 export async function getByUserEmail(email: string) {
@@ -35,7 +35,7 @@ export async function createUser(
   return await conn
     .promise()
     .execute(sql, values)
-    .then((result) => result[0])
+    .then((result) => (result[0] as ResultSetHeader).insertId)
     .catch((err) => {
       console.log(err);
     });

@@ -26,7 +26,11 @@ export async function join(req: Request, res: Response, next: NextFunction) {
       .json({ message: '이미 존재하는 이메일 입니다.' });
   }
 
-  const createdUser = await createUser(name, email, hashPassword, salt);
+  const createdUserId = await createUser(name, email, hashPassword, salt);
+
+  const token = createJWTToken(createdUserId);
+
+  setToken(res, token);
 
   res.sendStatus(StatusCodes.CREATED);
 }
@@ -50,7 +54,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       .json({ message: '이메일 또는 비밀번호가 유효하지 않습니다.' });
   }
 
-  const token = createJWTToken(email);
+  const token = createJWTToken(user.id);
 
   setToken(res, token);
 
@@ -128,9 +132,10 @@ export async function updateUser(
   res.sendStatus(StatusCodes.OK);
 }
 
-function createJWTToken(email: string) {
-  return jwt.sign({ email }, config.jwt.secretKey, {
-    expiresIn: config.jwt.expiresInSec,
+function createJWTToken(id: number | void) {
+  return jwt.sign({ id }, config.jwt.secretKey, {
+    // expiresIn: config.jwt.expiresInSec,
+    expiresIn: '5m',
     issuer: 'jeong',
   });
 }

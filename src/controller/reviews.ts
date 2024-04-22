@@ -22,8 +22,9 @@ export async function addReview(
   res: Response,
   next: NextFunction
 ) {
-  const { userId, text, bookId } = req.body;
-  const review = await addReviewById(+bookId, +userId, text);
+  const { text, bookId } = req.body;
+  const userId = req.userId;
+  const review = userId && (await addReviewById(+bookId, userId, text));
 
   res.status(201).json(review);
 }
@@ -33,8 +34,11 @@ export async function updateReview(
   res: Response,
   next: NextFunction
 ) {
-  const { userId, text, reviewId } = req.body;
-  const updatedReview = await updateReviewById(+reviewId, text, +userId);
+  const { text, reviewId } = req.body;
+  const userId = req.userId;
+
+  const updatedReview =
+    userId && (await updateReviewById(+reviewId, text, userId));
   res.status(200).json(updatedReview);
 }
 
@@ -43,8 +47,10 @@ export async function removeReview(
   res: Response,
   next: NextFunction
 ) {
-  const { userId, reviewId } = req.body;
-  const deletedReview = await deleteReview(+reviewId, +userId);
+  const reviewId = +req.body.reviewId;
+  const userId = req.userId;
+
+  const deletedReview = userId && (await deleteReview(reviewId, userId));
   res.status(200).json(deletedReview);
 }
 
@@ -53,7 +59,7 @@ export async function getUserReviews(
   res: Response,
   next: NextFunction
 ) {
-  const userId = +req.body.userId;
-  const reviews = await getReviewsUserId(userId);
+  const userId = req.userId;
+  const reviews = userId && (await getReviewsUserId(userId));
   res.status(200).json(reviews);
 }

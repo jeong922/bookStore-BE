@@ -9,32 +9,28 @@ import {
 } from '../model/orders.js';
 
 export async function order(req: Request, res: Response, next: NextFunction) {
-  //TODO:userId 받아오기 수정
-  const {
-    userId,
-    items,
-    delivery,
-    totalPrice,
-    totalQuantity,
-    paymentInformation,
-  } = req.body;
+  const { items, delivery, totalPrice, totalQuantity, paymentInformation } =
+    req.body;
 
-  const deliveryId = await addDelivery(delivery, userId);
+  const userId = req.userId;
+  const deliveryId = userId && (await addDelivery(delivery, userId));
 
-  const orderId = await addOrder(
-    items,
-    userId,
-    deliveryId,
-    totalPrice,
-    totalQuantity,
-    paymentInformation
-  );
+  const orderId =
+    userId &&
+    (await addOrder(
+      items,
+      userId,
+      deliveryId,
+      totalPrice,
+      totalQuantity,
+      paymentInformation
+    ));
 
   const ordered = await addOrdered(orderId, items);
 
   const deleteItems = await removeCartItemsByIds(items);
 
-  res.status(201).json(ordered);
+  res.status(201).json({ message: '주문이 완료 되었습니다.' });
 }
 
 export async function getOrders(
@@ -42,8 +38,8 @@ export async function getOrders(
   res: Response,
   next: NextFunction
 ) {
-  const { userId } = req.body;
-  const orders = await getOrderList(userId);
+  const userId = req.userId;
+  const orders = userId && (await getOrderList(userId));
 
   res.status(200).json(orders);
 }
@@ -53,8 +49,8 @@ export async function getOrderDetail(
   res: Response,
   next: NextFunction
 ) {
-  const id = +req.params.id;
-  const detail = await getOrderById(id);
+  const orderId = +req.params.id;
+  const detail = await getOrderById(orderId);
 
   res.status(200).json(detail);
 }

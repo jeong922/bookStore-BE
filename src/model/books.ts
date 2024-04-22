@@ -36,7 +36,7 @@ export async function getAllBooks(
     });
 }
 
-export async function getBookById(id: number, userId: number) {
+export async function getBookById(id: number, userId: number | undefined) {
   const sql = `${makeJoinQuery(userId)} WHERE b.id=?`;
   const values = userId ? [userId, id] : [id];
 

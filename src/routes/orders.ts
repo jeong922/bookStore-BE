@@ -2,6 +2,7 @@ import express from 'express';
 import * as orderController from '../controller/orders.js';
 import { body, param } from 'express-validator';
 import { validate } from '../middleware/validator.js';
+import { ensureAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ export const validateOrder = [
     .withMessage('한글자 이상 문자로 입력해 주세요.'),
   body('items.*.quantity')
     .notEmpty()
-    .isInt()
+    .isInt({ min: 1 })
     .withMessage('숫자로 입력해 주세요.'),
   body('delivery.address')
     .notEmpty()
@@ -56,12 +57,12 @@ export const validateOrder = [
 ];
 
 // 주문 등록
-router.post('/', validateOrder, orderController.order);
+router.post('/', ensureAuth, validateOrder, orderController.order);
 
 // 주문 목록 조회
-router.get('/', orderController.getOrders);
+router.get('/', ensureAuth, orderController.getOrders);
 
 // 주문 상세 조회
-router.get('/:id', validateOrderId, orderController.getOrderDetail);
+router.get('/:id', ensureAuth, validateOrderId, orderController.getOrderDetail);
 
 export default router;

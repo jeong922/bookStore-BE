@@ -2,6 +2,7 @@ import express from 'express';
 import * as bookController from '../controller/books.js';
 import { param, query } from 'express-validator';
 import { validate } from '../middleware/validator.js';
+import { optionalEnsureAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -28,9 +29,9 @@ const validateId = [
 ];
 
 // 전체 조회
-router.get('/', validateQuery, bookController.allBooks);
+router.get('/', optionalEnsureAuth, validateQuery, bookController.allBooks);
 
 // 개별 조회
-router.get('/:id', validateId, bookController.bookDetail);
+router.get('/:id', optionalEnsureAuth, validateId, bookController.bookDetail);
 
 export default router;

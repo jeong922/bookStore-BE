@@ -13,7 +13,9 @@ export async function addCartItem(
   res: Response,
   next: NextFunction
 ) {
-  const { bookId, quantity, userId } = req.body;
+  const { bookId, quantity } = req.body;
+  const userId = req.userId;
+
   const item = await getCartItem(userId, bookId);
 
   if (item) {
@@ -22,7 +24,7 @@ export async function addCartItem(
       .json({ message: '이미 장바구니에 담겨 있습니다.' });
   }
 
-  const cart = await addCart(bookId, quantity, userId);
+  const cart = await addCart(bookId, quantity, userId && +userId);
 
   res.status(StatusCodes.CREATED).json(cart);
 }
@@ -42,8 +44,8 @@ export async function getCartItems(
   res: Response,
   next: NextFunction
 ) {
-  const { userId, seletedItems } = req.body;
-
+  const seletedItems = req.body.seletedItems;
+  const userId = req.userId;
   const cart = await getCartItemsList(userId, seletedItems);
 
   res.status(StatusCodes.OK).json(cart);

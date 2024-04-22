@@ -2,6 +2,7 @@ import express from 'express';
 import * as userController from '../controller/users.js';
 import { body, param } from 'express-validator';
 import { validate } from '../middleware/validator.js';
+import { ensureAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -51,6 +52,7 @@ router.post('/login', validateEmailAndPassword, userController.login);
 // 비밀번호 초기화 요청
 router.post(
   '/reset',
+  ensureAuth,
   [...validateEmail, validate],
   userController.passwordResetRequest
 );
@@ -58,14 +60,15 @@ router.post(
 // 비밀번호 초기화
 router.put(
   '/reset',
+  ensureAuth,
   [...validatePassword, validate],
   userController.passwordReset
 );
 
 // 회원 개별 조회
-router.get('/:id', validateId, userController.getUser);
+router.get('/:id', ensureAuth, validateId, userController.getUser);
 
 // 회원 정보 수정
-router.put('/:id', validateId, userController.updateUser);
+router.put('/:id', ensureAuth, validateId, userController.updateUser);
 
 export default router;
