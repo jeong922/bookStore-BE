@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { getBooksByKeyword } from '../model/search.js';
+import { SearchCount, getBooksByKeyword } from '../model/search.js';
 
 export async function searchKeyword(
   req: Request,
@@ -15,5 +15,13 @@ export async function searchKeyword(
     +page,
     userId
   );
-  res.status(200).json(books);
+  const count = await SearchCount(keyword);
+  const result = {
+    books,
+    pagination: {
+      currentPage: +page,
+      totalCount: count ? count.totalCount : 0,
+    },
+  };
+  res.status(200).json(result);
 }

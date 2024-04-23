@@ -1,26 +1,31 @@
-import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { conn } from '../db/mariadb.js';
 
 export async function getByUserEmail(email: string) {
   const sql = 'SELECT * FROM users WHERE email = ?';
-  return await conn
-    .promise()
-    .execute<RowDataPacket[]>(sql, [email])
-    .then((result) => result[0][0])
-    .catch((err) => {
-      console.log(err);
-    });
+  try {
+    const [result]: [RowDataPacket[], FieldPacket[]] = await conn
+      .promise()
+      .execute(sql, [email]);
+
+    return result[0];
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 export async function getByUserId(id: number) {
   const sql = 'SELECT * FROM users WHERE id = ?';
-  return await conn
-    .promise()
-    .execute<RowDataPacket[]>(sql, [id])
-    .then((result) => result[0][0])
-    .catch((err) => {
-      console.log(err);
-    });
+
+  try {
+    const [result]: [RowDataPacket[], FieldPacket[]] = await conn
+      .promise()
+      .execute(sql, [id]);
+
+    return result[0];
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 export async function createUser(
@@ -32,13 +37,14 @@ export async function createUser(
   const sql =
     'INSERT INTO users (name, email, password, salt) VALUES(?, ?, ?, ?)';
   const values = [name, email, password, salt];
-  return await conn
-    .promise()
-    .execute(sql, values)
-    .then((result) => (result[0] as ResultSetHeader).insertId)
-    .catch((err) => {
-      console.log(err);
-    });
+
+  try {
+    const [result] = await conn.promise().execute(sql, values);
+
+    return (result as ResultSetHeader).insertId;
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 export async function updatePassword(
@@ -48,13 +54,14 @@ export async function updatePassword(
 ) {
   const sql = 'UPDATE users SET password=?, salt=? WHERE email=?';
   const values = [password, salt, email];
-  return await conn
-    .promise()
-    .execute(sql, values)
-    .then((result) => result[0])
-    .catch((err) => {
-      console.log(err);
-    });
+
+  try {
+    const [result] = await conn.promise().execute(sql, values);
+
+    return result;
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 export async function updateUserInfo(
@@ -64,11 +71,12 @@ export async function updateUserInfo(
 ) {
   const sql = 'UPDATE users SET contact=?, address=? WHERE id=?';
   const values = [contact, address, id];
-  return await conn
-    .promise()
-    .execute(sql, values)
-    .then((result) => result[0])
-    .catch((err) => {
-      console.log(err);
-    });
+
+  try {
+    const [result] = await conn.promise().execute(sql, values);
+
+    return result;
+  } catch (err) {
+    console.error(err);
+  }
 }

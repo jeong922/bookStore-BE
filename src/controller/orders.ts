@@ -26,7 +26,7 @@ export async function order(req: Request, res: Response, next: NextFunction) {
       paymentInformation
     ));
 
-  const ordered = await addOrdered(orderId, items);
+  const ordered = orderId && (await addOrdered(orderId, items));
 
   const deleteItems = await removeCartItemsByIds(items);
 

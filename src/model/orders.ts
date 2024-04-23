@@ -27,25 +27,26 @@ export async function addOrder(
     totalQuantity,
     paymentInformation,
   ];
-  return conn
-    .promise()
-    .execute(sql, values)
-    .then((result) => (result[0] as ResultSetHeader).insertId)
-    .catch((err) => {
-      console.log(err);
-    });
+
+  try {
+    const [result] = await conn.promise().execute(sql, values);
+
+    return (result as ResultSetHeader).insertId;
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-export async function addOrdered(orderId: number | void, items: Item[]) {
+export async function addOrdered(orderId: number, items: Item[]) {
   const bookIdArr = items.map((item) => [orderId, item.bookId, item.quantity]);
   const sql = `INSERT INTO orderedBook (order_id, book_id, quantity) VALUES ?`;
-  return conn
-    .promise()
-    .query(sql, [bookIdArr])
-    .then((result) => result[0])
-    .catch((err) => {
-      console.log(err);
-    });
+
+  try {
+    const [result] = await conn.promise().query(sql, [bookIdArr]);
+    return result;
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 export async function getOrderList(userId: number) {
@@ -54,13 +55,14 @@ export async function getOrderList(userId: number) {
 	FROM orders AS o JOIN deliveries AS d ON o.delivery_id = d.id 
 	WHERE o.user_id=?`;
   const values = [userId];
-  return conn
-    .promise()
-    .execute(sql, values)
-    .then((result) => result[0])
-    .catch((err) => {
-      console.log(err);
-    });
+
+  try {
+    const [result] = await conn.promise().execute(sql, values);
+
+    return result;
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 export async function getOrderById(orderId: number) {
@@ -68,13 +70,14 @@ export async function getOrderById(orderId: number) {
 	FROM orderedBook AS ob JOIN orders AS o ON ob.order_id = o.id JOIN books AS b ON ob.book_id = b.id 
 	WHERE ob.order_id=?`;
   const values = [orderId];
-  return conn
-    .promise()
-    .execute(sql, values)
-    .then((result) => result[0])
-    .catch((err) => {
-      console.log(err);
-    });
+
+  try {
+    const [result] = await conn.promise().execute(sql, values);
+
+    return result;
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 // delivery
@@ -82,23 +85,25 @@ export async function addDelivery(delivery: Delivery, userId: number) {
   const { address, receiver, contact } = delivery;
   const sql = `INSERT INTO deliveries (address, receiver, contact, user_id) VALUES(?, ?, ?, ?)`;
   const values = [address, receiver, contact, userId];
-  return conn
-    .promise()
-    .execute(sql, values)
-    .then((result) => (result[0] as ResultSetHeader).insertId)
-    .catch((err) => {
-      console.log(err);
-    });
+
+  try {
+    const [result] = await conn.promise().execute(sql, values);
+
+    return (result as ResultSetHeader).insertId;
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 export async function getDeliveryByUserId(userId: number) {
   const sql = `SELECT * FROM deliveries WHERE user_id=?`;
   const values = [userId];
-  return conn
-    .promise()
-    .execute(sql, values)
-    .then((result) => result[0])
-    .catch((err) => {
-      console.log(err);
-    });
+
+  try {
+    const [result] = await conn.promise().execute(sql, values);
+
+    return result;
+  } catch (err) {
+    console.error(err);
+  }
 }

@@ -1,3 +1,4 @@
+import { FieldPacket, RowDataPacket } from 'mysql2';
 import { conn } from '../db/mariadb.js';
 
 export async function getBooksByKeyword(
@@ -14,14 +15,29 @@ export async function getBooksByKeyword(
   const sql = `${makeJoinQuery(
     userId
   )} WHERE b.title LIKE ? ORDER BY b.id LIMIT ?, ?`;
+  console.log(sql, values);
+  try {
+    const [result] = await conn.promise().query(sql, values);
 
-  return conn
-    .promise()
-    .query(sql, values)
-    .then((result) => result[0])
-    .catch((err) => {
-      console.log(err);
-    });
+    return result;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function SearchCount(keyword: string) {
+  let values = [`%${keyword}%`];
+  const sql = `SELECT COUNT(*) AS totalCount FROM books AS b JOIN categories AS c on b.category_id = c.id WHERE b.title LIKE ?`;
+
+  try {
+    const [result]: [RowDataPacket[], FieldPacket[]] = await conn
+      .promise()
+      .query(sql, values);
+
+    return result[0];
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 function makeJoinQuery(userId: number | undefined) {
