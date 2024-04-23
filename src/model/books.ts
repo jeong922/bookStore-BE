@@ -25,10 +25,12 @@ export async function getAllBooks(
       'WHERE published_date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()';
   }
 
+  const orderby = newBook
+    ? 'ORDER BY published_date DESC'
+    : 'ORDER BY likes DESC';
+
   values = userId ? [userId, ...values] : values;
-  const sql = `${makeJoinQuery(
-    userId
-  )} ${query} ORDER BY likes DESC LIMIT ?, ?`;
+  const sql = `${makeJoinQuery(userId)} ${query} ${orderby} LIMIT ?, ?`;
 
   try {
     const [result] = await conn.promise().execute(sql, values);
