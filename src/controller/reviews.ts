@@ -4,6 +4,7 @@ import {
   deleteReview,
   getReviewsBookId,
   getReviewsUserId,
+  reviewCount,
   updateReviewById,
 } from '../model/reviews.js';
 
@@ -12,9 +13,20 @@ export async function getReviews(
   res: Response,
   next: NextFunction
 ) {
+  const { maxResults, page } = req.query;
   const bookId = +req.params.bookId;
-  const review = await getReviewsBookId(bookId);
-  res.status(200).json(review);
+  const reviews = await getReviewsBookId(bookId, maxResults, page);
+  const count = await reviewCount({ bookId });
+
+  const result = {
+    reviews,
+    pagination: {
+      currentPage: +page,
+      totalCount: count ? count.totalCount : 0,
+    },
+  };
+
+  res.status(200).json(result);
 }
 
 export async function addReview(
@@ -59,7 +71,18 @@ export async function getUserReviews(
   res: Response,
   next: NextFunction
 ) {
+  const { maxResults, page } = req.query;
   const userId = req.userId;
-  const reviews = userId && (await getReviewsUserId(userId));
-  res.status(200).json(reviews);
+  const reviews =
+    userId && (await getReviewsUserId(userId, +maxResults, +page));
+  const count = await reviewCount({ userId });
+
+  const result = {
+    reviews,
+    pagination: {
+      currentPage: +page,
+      totalCount: count ? count.totalCount : 0,
+    },
+  };
+  res.status(200).json(result);
 }
