@@ -1,6 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { bookImages, getAllBooks, getBookById } from '../model/books.js';
+import {
+  bookImages,
+  booksCount,
+  getAllBooks,
+  getBookById,
+} from '../model/books.js';
 
 export async function allBooks(
   req: Request,
@@ -12,13 +17,21 @@ export async function allBooks(
   const isNewBook = newBook === 'true' ? true : false;
 
   const books = await getAllBooks(
-    categoryId,
+    +categoryId,
     isNewBook,
-    maxResults,
-    page,
+    +maxResults,
+    +page,
     userId
   );
-  res.status(StatusCodes.OK).json(books);
+  const count = await booksCount(+categoryId, isNewBook);
+  const result = {
+    books,
+    pagination: {
+      currentPage: +page,
+      totalCount: count ? count.totalCount : 0,
+    },
+  };
+  res.status(StatusCodes.OK).json(result);
 }
 
 export async function bookDetail(
@@ -26,9 +39,10 @@ export async function bookDetail(
   res: Response,
   next: NextFunction
 ) {
-  const id = parseInt(req.params.id);
+  const id = +req.params.id;
   const userId = req.userId;
   const book = await getBookById(id, userId);
+
   if (!book) {
     return res.sendStatus(StatusCodes.NOT_FOUND);
   }
