@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { CookieOptions, NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
@@ -14,9 +14,6 @@ import {
 export async function join(req: Request, res: Response, next: NextFunction) {
   const { name, email, password } = req.body;
 
-  const salt = crypto.randomBytes(10).toString('base64');
-  const hashPassword = createHash(password, salt);
-
   const user = await getByUserEmail(email);
 
   if (user) {
@@ -25,7 +22,9 @@ export async function join(req: Request, res: Response, next: NextFunction) {
       .json({ message: '이미 존재하는 이메일 입니다.' });
   }
 
-  const createdUserId = await createUser(name, email, hashPassword, salt);
+  const hashPassword = await bcrypt.hash(password, config.bcrypt.saltRounds);
+
+  const createdUserId = await createUser(name, email, hashPassword);
 
   const token = createJwtToken(createdUserId);
 
@@ -45,9 +44,9 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       .json({ message: '이메일 또는 비밀번호가 유효하지 않습니다.' });
   }
 
-  const hashPassword = createHash(password, user.salt);
+  const isValidPassword = await bcrypt.compare(password, user.password);
 
-  if (user.password !== hashPassword) {
+  if (!isValidPassword) {
     return res
       .status(StatusCodes.UNAUTHORIZED)
       .json({ message: '이메일 또는 비밀번호가 유효하지 않습니다.' });
@@ -86,16 +85,19 @@ export async function passwordReset(
   const { email, password } = req.body;
   const user = await getByUserEmail(email);
 
-  const hanshNewPassword = user && createHash(password, user.salt);
+  const isValidPassword =
+    user && (await bcrypt.compare(password, user.password));
 
-  if (user && user.password === hanshNewPassword) {
+  console.log(isValidPassword);
+
+  if (isValidPassword) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       message: '이전 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.',
     });
   }
-  const salt = crypto.randomBytes(10).toString('base64');
-  const hashPassword = createHash(password, salt);
-  const updatedPassword = await updatePassword(hashPassword, email, salt);
+
+  const hashPassword = await bcrypt.hash(password, config.bcrypt.saltRounds);
+  const updatedPassword = await updatePassword(hashPassword, email);
 
   res.status(StatusCodes.OK).json(updatedPassword);
 }
@@ -150,10 +152,4 @@ function setToken(res: Response, token: string) {
   };
 
   return res.cookie('token', token, options);
-}
-
-function createHash(password: string, salt: string) {
-  return crypto
-    .pbkdf2Sync(password, salt, 10000, 10, 'sha512')
-    .toString('base64');
 }

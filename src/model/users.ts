@@ -31,12 +31,10 @@ export async function getByUserId(id: number) {
 export async function createUser(
   name: string,
   email: string,
-  password: string,
-  salt: string
+  password: string
 ) {
-  const sql =
-    'INSERT INTO users (name, email, password, salt) VALUES(?, ?, ?, ?)';
-  const values = [name, email, password, salt];
+  const sql = 'INSERT INTO users (name, email, password) VALUES(?, ?, ?)';
+  const values = [name, email, password];
 
   try {
     const [result] = await conn.promise().execute(sql, values);
@@ -47,13 +45,9 @@ export async function createUser(
   }
 }
 
-export async function updatePassword(
-  password: string,
-  email: string,
-  salt: string
-) {
-  const sql = 'UPDATE users SET password=?, salt=? WHERE email=?';
-  const values = [password, salt, email];
+export async function updatePassword(password: string, email: string) {
+  const sql = 'UPDATE users SET password=? WHERE email=?';
+  const values = [password, email];
 
   try {
     const [result] = await conn.promise().execute(sql, values);
