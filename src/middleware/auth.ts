@@ -34,11 +34,11 @@ export async function ensureAuth(
       return res
         .status(StatusCodes.UNAUTHORIZED)
         .json({ message: '로그인 세션이 만료되었습니다.' });
+    } else if (err instanceof jwt.JsonWebTokenError) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: '유효하지 않은 토큰입니다.' });
     }
-
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: '유효하지 않은 토큰입니다.' });
   }
 }
 
@@ -48,37 +48,36 @@ export async function optionalEnsureAuth(
   next: NextFunction
 ) {
   const authHeader = req.get('Authorization');
+  if (!authHeader || !(authHeader && authHeader.startsWith('Bearer '))) {
+    next();
+    return;
+  }
+
+  const token = authHeader.split(' ')[1];
+
   try {
-    if (!authHeader || !(authHeader && authHeader.startsWith('Bearer '))) {
-      // throw new ReferenceError('jwt must be provided');
-      next();
-      return;
+    const decodedJwt = jwt.verify(token, config.jwt.secretKey) as JwtPayload;
+
+    const user = await getByUserId(decodedJwt.id);
+
+    if (!user) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: '인증 오류' });
     }
 
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.split(' ')[1];
-      const decodedJwt = jwt.verify(token, config.jwt.secretKey) as JwtPayload;
+    req.userId = decodedJwt.id;
 
-      const user = await getByUserId(decodedJwt.id);
-
-      if (!user) {
-        return res
-          .status(StatusCodes.UNAUTHORIZED)
-          .json({ message: '인증 오류' });
-      }
-
-      req.userId = decodedJwt.id;
-      next();
-    }
+    next();
   } catch (err) {
     if (err instanceof jwt.TokenExpiredError) {
       return res
         .status(StatusCodes.UNAUTHORIZED)
         .json({ message: '로그인 세션이 만료되었습니다.' });
+    } else if (err instanceof jwt.JsonWebTokenError) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: '유효하지 않은 토큰입니다.' });
     }
-
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: '유효하지 않은 토큰입니다.' });
   }
 }
