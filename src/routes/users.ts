@@ -52,7 +52,6 @@ router.post('/login', validateEmailAndPassword, userController.login);
 // 비밀번호 초기화 요청
 router.post(
   '/reset',
-  ensureAuth,
   [...validateEmail, validate],
   userController.passwordResetRequest
 );
@@ -60,7 +59,6 @@ router.post(
 // 비밀번호 초기화
 router.put(
   '/reset',
-  ensureAuth,
   [...validatePassword, validate],
   userController.passwordReset
 );
