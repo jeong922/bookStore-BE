@@ -1,4 +1,4 @@
-import { ResultSetHeader } from 'mysql2';
+import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { conn } from '../db/mariadb.js';
 import { Item } from './carts.js';
 
@@ -49,17 +49,38 @@ export async function addOrdered(orderId: number, items: Item[]) {
   }
 }
 
-export async function getOrderList(userId: number) {
+export async function getOrderList(
+  userId: number,
+  maxResults: number,
+  page: number
+) {
+  const offset = maxResults * (page - 1);
+
   const sql = `SELECT o.id, o.created_at AS createdAt, o.main_book_title AS bookTitle, o.total_price AS totalPrice, o.total_quantity AS totalQuantity,
 	o.payment_information AS paymentInformation, d.address, d.receiver, d.contact
 	FROM orders AS o JOIN deliveries AS d ON o.delivery_id = d.id 
-	WHERE o.user_id=?`;
-  const values = [userId];
+	WHERE o.user_id=? LIMIT ?, ?`;
+  const values = [userId, offset, maxResults];
 
   try {
     const [result] = await conn.promise().execute(sql, values);
 
     return result;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function orderListCount(userId: number) {
+  const sql = `SELECT COUNT(*) AS totalCount FROM orders WHERE user_id=?`;
+  const values = [userId];
+
+  try {
+    const [result]: [RowDataPacket[], FieldPacket[]] = await conn
+      .promise()
+      .query(sql, values);
+
+    return result[0];
   } catch (err) {
     console.error(err);
   }

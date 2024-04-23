@@ -6,6 +6,7 @@ import {
   addOrdered,
   getOrderById,
   getOrderList,
+  orderListCount,
 } from '../model/orders.js';
 
 export async function order(req: Request, res: Response, next: NextFunction) {
@@ -38,10 +39,19 @@ export async function getOrders(
   res: Response,
   next: NextFunction
 ) {
+  const { maxResults, page } = req.query;
   const userId = req.userId;
-  const orders = userId && (await getOrderList(userId));
+  const orders = userId && (await getOrderList(userId, +maxResults, +page));
+  const count = userId && (await orderListCount(userId));
 
-  res.status(200).json(orders);
+  const result = {
+    orders,
+    pagination: {
+      currentPage: +page,
+      totalCount: count ? count.totalCount : 0,
+    },
+  };
+  res.status(200).json(result);
 }
 
 export async function getOrderDetail(

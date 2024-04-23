@@ -1,6 +1,6 @@
 import express from 'express';
 import * as orderController from '../controller/orders.js';
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
 import { validate } from '../middleware/validator.js';
 import { ensureAuth } from '../middleware/auth.js';
 
@@ -56,11 +56,23 @@ export const validateOrder = [
   validate,
 ];
 
+const validateOrders = [
+  query('maxResults')
+    .notEmpty()
+    .isInt({ min: 1 })
+    .withMessage('1이상 숫자로 입력해 주세요.'),
+  query('page')
+    .notEmpty()
+    .isInt({ min: 1 })
+    .withMessage('1이상 숫자로 입력해 주세요.'),
+  validate,
+];
+
 // 주문 등록
 router.post('/', ensureAuth, validateOrder, orderController.order);
 
 // 주문 목록 조회
-router.get('/', ensureAuth, orderController.getOrders);
+router.get('/', ensureAuth, validateOrders, orderController.getOrders);
 
 // 주문 상세 조회
 router.get('/:id', ensureAuth, validateOrderId, orderController.getOrderDetail);
