@@ -11,7 +11,7 @@ export type Item = {
 export async function addCart(
   bookId: number,
   quantity: number,
-  userId?: number
+  userId: number
 ) {
   const sql =
     'INSERT INTO cartItems (book_id, quantity, user_id) VALUES(?, ?, ?)';
@@ -50,15 +50,17 @@ export async function removeCartItemsByIds(items: Item[]) {
     });
 }
 
+type CartItemValues = number | number[];
+
 export async function getCartItemsList(
-  userId: number | undefined,
+  userId: number,
   seletedItems?: number[]
 ) {
   let sql = `SELECT c.id, c.book_id AS bookId, b.title, b.summary, c.quantity, b.price 
 		FROM cartItems AS c JOIN books AS b ON c.book_id = b.id 
 		WHERE user_id=?`;
 
-  const values: (undefined | number | number[])[] = [userId];
+  const values: CartItemValues[] = [userId];
 
   if (seletedItems && seletedItems.length > 0) {
     sql += ' AND c.id IN (?) ';
@@ -74,10 +76,7 @@ export async function getCartItemsList(
     });
 }
 
-export async function getCartItem(
-  userId: number | undefined = undefined,
-  bookId: number
-) {
+export async function getCartItem(userId: number, bookId: number) {
   const sql = 'SELECT * FROM cartItems WHERE user_id=? AND book_id=?';
   const values = [userId, bookId];
   return conn

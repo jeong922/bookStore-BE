@@ -16,7 +16,7 @@ export async function addCartItem(
   const { bookId, quantity } = req.body;
   const userId = req.userId;
 
-  const item = await getCartItem(userId, bookId);
+  const item = userId && (await getCartItem(userId, bookId));
 
   if (item) {
     return res
@@ -24,7 +24,7 @@ export async function addCartItem(
       .json({ message: '이미 장바구니에 담겨 있습니다.' });
   }
 
-  const cart = await addCart(bookId, quantity, userId && +userId);
+  const cart = userId && (await addCart(bookId, quantity, userId));
 
   res.status(StatusCodes.CREATED).json(cart);
 }
@@ -46,7 +46,7 @@ export async function getCartItems(
 ) {
   const seletedItems = req.body.seletedItems;
   const userId = req.userId;
-  const cart = await getCartItemsList(userId, seletedItems);
+  const cart = userId && (await getCartItemsList(userId, seletedItems));
 
   res.status(StatusCodes.OK).json(cart);
 }
