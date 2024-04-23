@@ -26,7 +26,9 @@ export async function getAllBooks(
   }
 
   values = userId ? [userId, ...values] : values;
-  const sql = `${makeJoinQuery(userId)} ${query} ORDER BY id LIMIT ?, ?`;
+  const sql = `${makeJoinQuery(
+    userId
+  )} ${query} ORDER BY likes DESC LIMIT ?, ?`;
 
   try {
     const [result] = await conn.promise().execute(sql, values);
