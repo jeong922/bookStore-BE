@@ -1,8 +1,5 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { CookieOptions, NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { config } from '../config.js';
 import {
   createUser,
   getByUserEmail,
@@ -10,6 +7,8 @@ import {
   updatePassword,
   updateUserInfo,
 } from '../model/users.js';
+import { makeHash, validPassword } from '../service/hashPassword.js';
+import { createJwtToken, setToken } from '../service/cookie.js';
 
 export async function join(req: Request, res: Response, next: NextFunction) {
   try {
@@ -23,7 +22,7 @@ export async function join(req: Request, res: Response, next: NextFunction) {
         .json({ message: '이미 존재하는 이메일 입니다.' });
     }
 
-    const hashPassword = await bcrypt.hash(password, config.bcrypt.saltRounds);
+    const hashPassword = await makeHash(password);
 
     const createdUserId = await createUser(name, email, hashPassword);
 
@@ -49,7 +48,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         .json({ message: '이메일 또는 비밀번호가 유효하지 않습니다.' });
     }
 
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = await validPassword(password, user.password);
 
     if (!isValidPassword) {
       return res
@@ -98,10 +97,7 @@ export async function passwordReset(
     const { email, password } = req.body;
     const user = await getByUserEmail(email);
 
-    const isValidPassword =
-      user && (await bcrypt.compare(password, user.password));
-
-    console.log(isValidPassword);
+    const isValidPassword = await validPassword(password, user.password);
 
     if (isValidPassword) {
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -109,7 +105,7 @@ export async function passwordReset(
       });
     }
 
-    const hashPassword = await bcrypt.hash(password, config.bcrypt.saltRounds);
+    const hashPassword = await makeHash(password);
     const updatedPassword = await updatePassword(hashPassword, email);
 
     res.status(StatusCodes.OK).json(updatedPassword);
@@ -158,22 +154,4 @@ export async function updateUser(
   } catch (err) {
     res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
-}
-
-function createJwtToken(id: number | void) {
-  return jwt.sign({ id }, config.jwt.secretKey, {
-    expiresIn: config.jwt.expiresInSec,
-    issuer: 'jeong',
-  });
-}
-
-function setToken(res: Response, token: string) {
-  const options: CookieOptions = {
-    maxAge: config.jwt.expiresInSec * 1000,
-    httpOnly: true,
-    sameSite: 'none',
-    secure: true,
-  };
-
-  return res.cookie('token', token, options);
 }

@@ -30,5 +30,6 @@ export const config = {
   jwt: {
     secretKey: required('JWT_SECRET'),
     expiresInSec: parseInt(required('JWT_EXPIRES_SEC', 300)),
+    issuer: required('JWT_ISSUER'),
   },
 };
