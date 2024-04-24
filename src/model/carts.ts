@@ -20,7 +20,7 @@ export async function addCart(
   try {
     const [result] = await conn.promise().execute(sql, values);
 
-    return result;
+    return (result as ResultSetHeader).affectedRows;
   } catch (err) {
     console.error(err);
     throw err;
@@ -34,7 +34,7 @@ export async function removeCartById(id: number) {
   try {
     const [result] = await conn.promise().execute(sql, values);
 
-    return result;
+    return (result as ResultSetHeader).affectedRows;
   } catch (err) {
     console.error(err);
     throw err;

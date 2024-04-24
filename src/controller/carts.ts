@@ -26,8 +26,15 @@ export async function addCartItem(
     }
 
     const cart = userId && (await addCart(bookId, quantity, userId));
+    console.log(cart);
 
-    res.status(StatusCodes.CREATED).json(cart);
+    if (!cart) {
+      return res.sendStatus(StatusCodes.BAD_REQUEST);
+    }
+
+    res
+      .status(StatusCodes.CREATED)
+      .json({ message: '장바구니에 상품이 정상적으로 담겼습니다.' });
   } catch (err) {
     res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
@@ -41,7 +48,13 @@ export async function removeCartItem(
   try {
     const id = +req.params.id;
     const item = await removeCartById(id);
-    res.status(StatusCodes.OK).json(item);
+
+    if (!item) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: '장바구니 존재하지 않는 상품 입니다.' });
+    }
+    res.status(StatusCodes.OK).json({ message: '삭제 되었습니다.' });
   } catch (err) {
     res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
@@ -74,7 +87,7 @@ export async function updateCartItem(
 
     const item = await updateItem(id, quantity);
 
-    res.status(StatusCodes.OK).json(item);
+    res.status(StatusCodes.OK).json({ message: '수량이 변경 되었습니다.' });
   } catch (err) {
     res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }

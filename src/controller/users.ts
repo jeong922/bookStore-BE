@@ -60,10 +60,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
     setToken(res, token);
 
-    // FIXME:json으로 token 넘겨주는거 삭제
-    res
-      .status(StatusCodes.OK)
-      .json({ name: user.name, email: user.email, token });
+    res.status(StatusCodes.OK).json({ name: user.name, email: user.email });
   } catch (err) {
     res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }

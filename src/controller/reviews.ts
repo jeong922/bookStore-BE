@@ -1,4 +1,4 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import {
   addReviewById,
   deleteReview,
@@ -61,7 +61,8 @@ export async function updateReview(
 
     const updatedReview =
       userId && (await updateReviewById(+reviewId, text, userId));
-    res.status(200).json(updatedReview);
+
+    res.status(200).json({ message: '리뷰가 등록 되었습니다.' });
   } catch (err) {
     res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
@@ -77,7 +78,8 @@ export async function removeReview(
     const userId = req.userId;
 
     const deletedReview = userId && (await deleteReview(reviewId, userId));
-    res.status(200).json(deletedReview);
+
+    res.status(200).json({ message: '리뷰가 삭제 되었습니다.' });
   } catch (err) {
     res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
