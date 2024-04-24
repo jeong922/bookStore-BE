@@ -1,6 +1,8 @@
 import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
+import cors from 'cors';
 import { config } from './config.js';
+import { limiter } from './middleware/rateLimiter.js';
 import usersRouter from './routes/users.js';
 import booksRouter from './routes/books.js';
 import cartsRouter from './routes/carts.js';
@@ -14,7 +16,9 @@ const port = config.host.port;
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 app.use(morgan('tiny'));
+app.use(limiter);
 
 app.use('/users', usersRouter);
 app.use('/category', categoryRouter);

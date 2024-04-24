@@ -32,4 +32,9 @@ export const config = {
     expiresInSec: parseInt(required('JWT_EXPIRES_SEC', 300)),
     issuer: required('JWT_ISSUER'),
   },
+
+  rateLimit: {
+    windowMs: parseInt(required('LATE_LIMIT_WINDOW_MS')),
+    max: parseInt(required('LATE_LIMIT_MAX')),
+  },
 };
