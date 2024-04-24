@@ -7,6 +7,10 @@ export async function categories(
   res: Response,
   next: NextFunction
 ) {
-  const data = await getAllCategories();
-  res.status(StatusCodes.OK).json(data);
+  try {
+    const data = await getAllCategories();
+    res.status(StatusCodes.OK).json(data);
+  } catch (err) {
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
 }

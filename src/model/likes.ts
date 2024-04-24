@@ -10,6 +10,7 @@ export async function addLike(bookId: number, userId: any) {
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -23,5 +24,6 @@ export async function removelike(bookId: number, userId: number) {
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }

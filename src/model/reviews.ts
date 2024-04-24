@@ -15,6 +15,7 @@ export async function addReviewById(
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -34,6 +35,7 @@ export async function getReviewsBookId(
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -63,6 +65,7 @@ export async function reviewCount(obj: ReviewId) {
     return result[0];
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -82,6 +85,7 @@ export async function getReviewsUserId(
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -99,6 +103,7 @@ export async function updateReviewById(
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -112,5 +117,6 @@ export async function deleteReview(id: number, userId: number) {
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }

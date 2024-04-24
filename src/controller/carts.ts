@@ -13,20 +13,24 @@ export async function addCartItem(
   res: Response,
   next: NextFunction
 ) {
-  const { bookId, quantity } = req.body;
-  const userId = req.userId;
+  try {
+    const { bookId, quantity } = req.body;
+    const userId = req.userId;
 
-  const item = userId && (await getCartItem(userId, bookId));
+    const item = userId && (await getCartItem(userId, bookId));
 
-  if (item) {
-    return res
-      .status(StatusCodes.CONFLICT)
-      .json({ message: '이미 장바구니에 담겨 있습니다.' });
+    if (item) {
+      return res
+        .status(StatusCodes.CONFLICT)
+        .json({ message: '이미 장바구니에 담겨 있습니다.' });
+    }
+
+    const cart = userId && (await addCart(bookId, quantity, userId));
+
+    res.status(StatusCodes.CREATED).json(cart);
+  } catch (err) {
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
-
-  const cart = userId && (await addCart(bookId, quantity, userId));
-
-  res.status(StatusCodes.CREATED).json(cart);
 }
 
 export async function removeCartItem(
@@ -34,9 +38,13 @@ export async function removeCartItem(
   res: Response,
   next: NextFunction
 ) {
-  const { id } = req.params;
-  const item = await removeCartById(+id);
-  res.status(StatusCodes.OK).json(item);
+  try {
+    const id = +req.params.id;
+    const item = await removeCartById(id);
+    res.status(StatusCodes.OK).json(item);
+  } catch (err) {
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
 }
 
 export async function getCartItems(
@@ -44,11 +52,15 @@ export async function getCartItems(
   res: Response,
   next: NextFunction
 ) {
-  const seletedItems = req.body.seletedItems;
-  const userId = req.userId;
-  const cart = userId && (await getCartItemsList(userId, seletedItems));
+  try {
+    const seletedItems = req.body.seletedItems;
+    const userId = req.userId;
+    const cart = userId && (await getCartItemsList(userId, seletedItems));
 
-  res.status(StatusCodes.OK).json(cart);
+    res.status(StatusCodes.OK).json(cart);
+  } catch (err) {
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
 }
 
 export async function updateCartItem(
@@ -56,10 +68,14 @@ export async function updateCartItem(
   res: Response,
   next: NextFunction
 ) {
-  const id = +req.params.id;
-  const quantity = +req.body.quantity;
+  try {
+    const id = +req.params.id;
+    const quantity = +req.body.quantity;
 
-  const item = await updateItem(id, quantity);
+    const item = await updateItem(id, quantity);
 
-  res.status(StatusCodes.OK).json(item);
+    res.status(StatusCodes.OK).json(item);
+  } catch (err) {
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
 }

@@ -7,26 +7,31 @@ import {
   reviewCount,
   updateReviewById,
 } from '../model/reviews.js';
+import { StatusCodes } from 'http-status-codes';
 
 export async function getReviews(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const { maxResults, page } = req.query;
-  const bookId = +req.params.bookId;
-  const reviews = await getReviewsBookId(bookId, maxResults, page);
-  const count = await reviewCount({ bookId });
+  try {
+    const { maxResults, page } = req.query;
+    const bookId = +req.params.bookId;
+    const reviews = await getReviewsBookId(bookId, maxResults, page);
+    const count = await reviewCount({ bookId });
 
-  const result = {
-    reviews,
-    pagination: {
-      currentPage: +page,
-      totalCount: count ? count.totalCount : 0,
-    },
-  };
+    const result = {
+      reviews,
+      pagination: {
+        currentPage: +page,
+        totalCount: count ? count.totalCount : 0,
+      },
+    };
 
-  res.status(200).json(result);
+    res.status(200).json(result);
+  } catch (err) {
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
 }
 
 export async function addReview(
@@ -34,11 +39,15 @@ export async function addReview(
   res: Response,
   next: NextFunction
 ) {
-  const { text, bookId } = req.body;
-  const userId = req.userId;
-  const review = userId && (await addReviewById(+bookId, userId, text));
+  try {
+    const { text, bookId } = req.body;
+    const userId = req.userId;
+    const review = userId && (await addReviewById(+bookId, userId, text));
 
-  res.status(201).json(review);
+    res.status(201).json(review);
+  } catch (err) {
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
 }
 
 export async function updateReview(
@@ -46,12 +55,16 @@ export async function updateReview(
   res: Response,
   next: NextFunction
 ) {
-  const { text, reviewId } = req.body;
-  const userId = req.userId;
+  try {
+    const { text, reviewId } = req.body;
+    const userId = req.userId;
 
-  const updatedReview =
-    userId && (await updateReviewById(+reviewId, text, userId));
-  res.status(200).json(updatedReview);
+    const updatedReview =
+      userId && (await updateReviewById(+reviewId, text, userId));
+    res.status(200).json(updatedReview);
+  } catch (err) {
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
 }
 
 export async function removeReview(
@@ -59,11 +72,15 @@ export async function removeReview(
   res: Response,
   next: NextFunction
 ) {
-  const reviewId = +req.body.reviewId;
-  const userId = req.userId;
+  try {
+    const reviewId = +req.body.reviewId;
+    const userId = req.userId;
 
-  const deletedReview = userId && (await deleteReview(reviewId, userId));
-  res.status(200).json(deletedReview);
+    const deletedReview = userId && (await deleteReview(reviewId, userId));
+    res.status(200).json(deletedReview);
+  } catch (err) {
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
 }
 
 export async function getUserReviews(
@@ -71,18 +88,22 @@ export async function getUserReviews(
   res: Response,
   next: NextFunction
 ) {
-  const { maxResults, page } = req.query;
-  const userId = req.userId;
-  const reviews =
-    userId && (await getReviewsUserId(userId, +maxResults, +page));
-  const count = await reviewCount({ userId });
+  try {
+    const { maxResults, page } = req.query;
+    const userId = req.userId;
+    const reviews =
+      userId && (await getReviewsUserId(userId, +maxResults, +page));
+    const count = await reviewCount({ userId });
 
-  const result = {
-    reviews,
-    pagination: {
-      currentPage: +page,
-      totalCount: count ? count.totalCount : 0,
-    },
-  };
-  res.status(200).json(result);
+    const result = {
+      reviews,
+      pagination: {
+        currentPage: +page,
+        totalCount: count ? count.totalCount : 0,
+      },
+    };
+    res.status(200).json(result);
+  } catch (err) {
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
 }

@@ -11,6 +11,7 @@ export async function getByUserEmail(email: string) {
     return result[0];
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -25,6 +26,7 @@ export async function getByUserId(id: number) {
     return result[0];
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -42,6 +44,7 @@ export async function createUser(
     return (result as ResultSetHeader).insertId;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -55,6 +58,7 @@ export async function updatePassword(password: string, email: string) {
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -72,5 +76,6 @@ export async function updateUserInfo(
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }

@@ -9,5 +9,6 @@ export async function getAllCategories() {
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }

@@ -37,6 +37,7 @@ export async function getAllBooks(
     return result;
   } catch (err) {
     console.error(err);
+    return err;
   }
 }
 
@@ -52,6 +53,7 @@ export async function getBookById(id: number, userId: number | undefined) {
     return result[0];
   } catch (err) {
     console.error(err);
+    return err;
   }
 }
 
@@ -64,6 +66,7 @@ export async function bookImages(id: number) {
     return result[0];
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -93,6 +96,7 @@ export async function booksCount(catagoryId: number, newBook: boolean) {
     return result[0];
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 

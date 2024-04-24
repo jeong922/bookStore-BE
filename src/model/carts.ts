@@ -1,4 +1,4 @@
-import { FieldPacket, RowDataPacket } from 'mysql2';
+import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { conn } from '../db/mariadb.js';
 
 export type Item = {
@@ -23,6 +23,7 @@ export async function addCart(
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -36,6 +37,7 @@ export async function removeCartById(id: number) {
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -50,6 +52,7 @@ export async function removeCartItemsByIds(items: Item[]) {
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -76,6 +79,7 @@ export async function getCartItemsList(
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -91,6 +95,7 @@ export async function getCartItem(userId: number, bookId: number) {
     return result[0];
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -99,10 +104,13 @@ export async function updateItem(id: number, quantity: number) {
   const values = [quantity, id];
 
   try {
-    const [result] = await conn.promise().execute(sql, values);
+    const [result]: [ResultSetHeader, FieldPacket[]] = await conn
+      .promise()
+      .execute(sql, values);
 
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }

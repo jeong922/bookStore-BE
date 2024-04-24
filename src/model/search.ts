@@ -22,6 +22,7 @@ export async function getBooksByKeyword(
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -37,6 +38,7 @@ export async function SearchCount(keyword: string) {
     return result[0];
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 

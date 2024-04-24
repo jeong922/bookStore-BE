@@ -34,6 +34,7 @@ export async function addOrder(
     return (result as ResultSetHeader).insertId;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -46,6 +47,7 @@ export async function addOrdered(orderId: number, items: Item[]) {
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -68,6 +70,7 @@ export async function getOrderList(
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -83,6 +86,7 @@ export async function orderListCount(userId: number) {
     return result[0];
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -98,6 +102,7 @@ export async function getOrderById(orderId: number) {
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -113,6 +118,7 @@ export async function addDelivery(delivery: Delivery, userId: number) {
     return (result as ResultSetHeader).insertId;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
 
@@ -126,5 +132,6 @@ export async function getDeliveryByUserId(userId: number) {
     return result;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }

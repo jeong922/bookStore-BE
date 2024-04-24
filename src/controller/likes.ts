@@ -7,12 +7,16 @@ export async function likeBook(
   res: Response,
   next: NextFunction
 ) {
-  const bookId = +req.params.bookId;
-  const userId = req.userId;
+  try {
+    const bookId = +req.params.bookId;
+    const userId = req.userId;
 
-  const like = userId && (await addLike(bookId, userId));
+    const like = userId && (await addLike(bookId, userId));
 
-  res.status(StatusCodes.OK).json(like);
+    res.status(StatusCodes.OK).json(like);
+  } catch (err) {
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
 }
 
 export async function dislikeBook(
@@ -20,10 +24,14 @@ export async function dislikeBook(
   res: Response,
   next: NextFunction
 ) {
-  const bookId = +req.params.bookId;
-  const userId = req.userId;
+  try {
+    const bookId = +req.params.bookId;
+    const userId = req.userId;
 
-  const like = userId && (await removelike(bookId, userId));
+    const like = userId && (await removelike(bookId, userId));
 
-  res.status(StatusCodes.OK).json(like);
+    res.status(StatusCodes.OK).json(like);
+  } catch (err) {
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
 }
