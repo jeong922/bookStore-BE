@@ -8,7 +8,8 @@ import {
   updateUserInfo,
 } from '../model/users.js';
 import { makeHash, validPassword } from '../service/hashPassword.js';
-import { createJwtToken, setToken } from '../service/cookie.js';
+import { setToken } from '../service/cookie.js';
+import { createJwtToken } from '../service/jwt.js';
 
 export async function join(req: Request, res: Response, next: NextFunction) {
   try {
