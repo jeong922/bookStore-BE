@@ -27,7 +27,7 @@ export async function join(req: Request, res: Response, next: NextFunction) {
 
     const createdUserId = await createUser(name, email, hashPassword);
 
-    const token = createJwtToken(createdUserId);
+    const token = await createJwtToken(createdUserId);
 
     setToken(res, token);
 
@@ -57,7 +57,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         .json({ message: '이메일 또는 비밀번호가 유효하지 않습니다.' });
     }
 
-    const token = createJwtToken(user.id);
+    const token = await createJwtToken(user.id);
 
     setToken(res, token);
 

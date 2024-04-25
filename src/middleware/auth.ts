@@ -1,8 +1,8 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { StatusCodes } from 'http-status-codes';
 import { NextFunction, Request, Response } from 'express';
-import { config } from '../config.js';
 import { getByUserId } from '../model/users.js';
+import { verifyJwtToken } from '../service/jwt.js';
 
 export async function ensureAuth(
   req: Request,
@@ -16,7 +16,7 @@ export async function ensureAuth(
   const token = authHeader.split(' ')[1];
 
   try {
-    const decodedJwt = jwt.verify(token, config.jwt.secretKey) as JwtPayload;
+    const decodedJwt = await verifyJwtToken(token);
 
     const user = await getByUserId(decodedJwt.id);
 
@@ -56,7 +56,7 @@ export async function optionalEnsureAuth(
   const token = authHeader.split(' ')[1];
 
   try {
-    const decodedJwt = jwt.verify(token, config.jwt.secretKey) as JwtPayload;
+    const decodedJwt = await verifyJwtToken(token);
 
     const user = await getByUserId(decodedJwt.id);
 
