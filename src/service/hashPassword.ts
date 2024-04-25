@@ -6,6 +6,6 @@ export async function makeHash(password: string) {
   return bcrypt.hash(password, saltRounds);
 }
 
-export async function validPassword(password: string, userPassword: string) {
+export async function validatePassword(password: string, userPassword: string) {
   return bcrypt.compare(password, userPassword);
 }

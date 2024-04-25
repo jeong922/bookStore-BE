@@ -7,7 +7,7 @@ import {
   updatePassword,
   updateUserInfo,
 } from '../model/users.js';
-import { makeHash, validPassword } from '../service/hashPassword.js';
+import { makeHash, validatePassword } from '../service/hashPassword.js';
 import { setToken } from '../service/cookie.js';
 import { createJwtToken } from '../service/jwt.js';
 
@@ -49,7 +49,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         .json({ message: '이메일 또는 비밀번호가 유효하지 않습니다.' });
     }
 
-    const isValidPassword = await validPassword(password, user.password);
+    const isValidPassword = await validatePassword(password, user.password);
 
     if (!isValidPassword) {
       return res
@@ -95,7 +95,7 @@ export async function passwordReset(
     const { email, password } = req.body;
     const user = await getByUserEmail(email);
 
-    const isValidPassword = await validPassword(password, user.password);
+    const isValidPassword = await validatePassword(password, user.password);
 
     if (isValidPassword) {
       return res.status(StatusCodes.BAD_REQUEST).json({
