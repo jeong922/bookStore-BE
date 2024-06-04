@@ -61,7 +61,9 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
     setToken(res, token);
 
-    res.status(StatusCodes.OK).json({ name: user.name, email: user.email });
+    res
+      .status(StatusCodes.OK)
+      .json({ id: user.id, name: user.name, email: user.email, token });
   } catch (err) {
     res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }

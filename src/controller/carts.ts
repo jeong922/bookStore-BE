@@ -26,7 +26,6 @@ export async function addCartItem(
     }
 
     const cart = userId && (await addCart(bookId, quantity, userId));
-    console.log(cart);
 
     if (!cart) {
       return res.sendStatus(StatusCodes.BAD_REQUEST);

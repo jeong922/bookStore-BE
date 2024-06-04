@@ -101,7 +101,7 @@ export async function booksCount(catagoryId: number, newBook: boolean) {
 }
 
 function makeJoinQuery(userId: number | undefined) {
-  return `SELECT b.id, b.title, b.cover, b.form, b.author, b.isbn, b.pages, b.summary, b.detail, b.contents, b.price, b.published_date AS publishedDate, c.category,
+  return `SELECT b.id, b.title, b.cover, b.form, b.author, b.isbn, b.pages, b.summary, b.detail, b.contents, b.price, b.published_date AS publishedDate, c.id AS categoryId, c.category,
                     (SELECT COUNT(*) FROM likes AS l WHERE l.book_id = b.id) AS likes${
                       userId
                         ? ', (SELECT EXISTS(SELECT * FROM likes AS l WHERE l.user_id = ? and l.book_id = b.id)) AS liked'
